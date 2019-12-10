@@ -58,10 +58,18 @@ export const fetchNewTokenFromAPI = async ({ key, secret }: { key: string, secre
   const method = 'POST'
   const body = 'grant_type=client_credentials'
 
-  const sig = encodeURIComponent(hmacsign256(method, API_URL, key, secret))
+  const auth = {
+    oauth_consumer_key: key,
+    oauth_nonce: generateNonce(nonceLength),
+    oauth_signature_method: 'HMAC-SHA256',
+    oauth_timestamp: String(Math.round(new Date().getTime() / 1000)),
+    oauth_version: '1.0',
+  }
+
+  const sig = encodeURIComponent(hmacsign256(method, API_URL, auth, key, secret))
   let headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
-    'Authorization': `OAuth oauth_consumer_key="${key}",oauth_nonce="${generateNonce(nonceLength)}",oauth_signature="${sig}",oauth_signature_method="HMAC-SHA256",oauth_timestamp="${String(Math.round(new Date().getTime() / 1000))}",oauth_version="1.0"`
+    'Authorization': `OAuth oauth_consumer_key="${auth['oauth_consumer_key']}",oauth_nonce="${auth['oauth_nonce']}",oauth_signature="${sig}",oauth_signature_method="HMAC-SHA256",oauth_timestamp="${auth['oauth_timestamp']}",oauth_version="1.0"`
   }
   console.log('headers', headers)
 
