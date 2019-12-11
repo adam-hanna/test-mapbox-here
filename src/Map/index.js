@@ -22,13 +22,14 @@ export const Map = Dimensions({ elementResize: true })(({ containerWidth, contai
   // note: https://uber.github.io/react-map-gl/#/Documentation/getting-started/about-mapbox-tokens
   const transformRequest = (url, resourceType) => {
     if (resourceType === 'Source' && url.match('vector.hereapi.com')) {
-      console.log('match')
       return {
         url,
-        mode: 'cors',
+        mode: 'no-cors',
+        /*
         headers: { 
           'Authorization': `Bearer ${REACT_APP_HERE_MAPS_FREMIUM_TOKEN}`,
         },
+        */
       }
     }
   }
@@ -41,47 +42,18 @@ export const Map = Dimensions({ elementResize: true })(({ containerWidth, contai
     "sources": {
       "here-map": {
         "type": "vector",
-        "url": `https://vector.hereapi.com/v2/vectortiles/base/mc/${zoom}/${xTile}/${yTile}/omv`,
-      },
-      "osm": {
-        "type": "raster",
+        //"url": `https://vector.hereapi.com/v2/vectortiles/base/mc/${zoom}/${xTile}/${yTile}/omv?apiKey=${REACT_APP_HERE_MAPS_FREMIUM_TOKEN}`,
+        //"url": `https://vector.hereapi.com/v2/vectortiles/base/mc/{z}/{x}/{y}/omv?apikey=${REACT_APP_HERE_MAPS_FREMIUM_TOKEN}`
         "tiles": [
-          "http://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          `https://vector.hereapi.com/v2/vectortiles/base/mc/${zoom}/${xTile}/${yTile}/omv?apiKey=${REACT_APP_HERE_MAPS_FREMIUM_TOKEN}`
+          //`https://vector.hereapi.com/v2/vectortiles/base/mc/{z}/{x}/{y}/omv?apikey=${REACT_APP_HERE_MAPS_FREMIUM_TOKEN}`
         ],
-        "minzoom": 0,
-        "maxzoom": 14
+        "minzoom": 1,
+        "maxzoom": 17
       }
     },
-    "layers": [
-      {
-        "id": "osm",
-        "type": "raster",
-        "source": "osm"
-      }
-    ]
+    "layers": []
   })
-
-  /*
-  {
-    "id": "here-vector",
-    "type": "vector",
-    "source": "here-map",
-    "minzoom": 0,
-    "maxzoom": 17
-  }
-  */
-
-  /*
-  {
-    "id": "water",
-    "source": "here-map",
-    "source-layer": "water",
-    "type": "fill",
-    "paint": {
-      "fill-color": "#00ffff"
-    }
-  } 
-  */
 
   // const mapStyle = `https://vector.hereapi.com/v2/vectortiles/base/mc/${zoom}/${xTile}/${yTile}/omv`
   // const mapStyle = "https://s3.amazonaws.com/cdn.brianbancroft.io/assets/osmstyle.json"
@@ -91,8 +63,9 @@ export const Map = Dimensions({ elementResize: true })(({ containerWidth, contai
       height={containerHeight}
       {...viewport}
       onViewportChange={onViewportChange}
-      transformRequest={transformRequest}
       mapStyle={mapStyle}
+      minZoom={1}
+      transformRequest={transformRequest}
     >
       {children}
     </ReactMapGL>
